@@ -1,13 +1,13 @@
-package com.university.java_lecture_3;
+package com.d1sxrder3d.java_spring_prfct;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JavaLecture3Application {
+public class JavaSpringPrfctApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(JavaLecture3Application.class, args);
+		SpringApplication.run(JavaSpringPrfctApplication.class, args);
 	}
 
 }
