@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @UtilityClass
-public class IdGenerator {
+public class IdGeneratorUtil {
 
     private static final int INITIAL_ID = 1;
     private static final Map<Class<?>, AtomicLong> ENTITY_ID_COUNTER;
