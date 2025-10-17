@@ -1,7 +1,10 @@
 package com.university.java_lecture_3.service;
 
+import com.university.java_lecture_3.exception.UserValidationException;
 import com.university.java_lecture_3.model.User;
 import com.university.java_lecture_3.util.IdGeneratorUtil;
+import com.university.java_lecture_3.validation.Validator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,9 +15,12 @@ import java.util.Optional;
 public class UserService {
 
     private final List<User> users;
+    private final Validator<User, UserValidationException> validator;
 
-    public UserService() {
+    @Autowired
+    public UserService(Validator<User, UserValidationException> validator) {
         this.users = new ArrayList<>();
+        this.validator = validator;
         createTestUsers();
     }
 
@@ -45,6 +51,7 @@ public class UserService {
     }
 
     public User save(User user) {
+        validator.validate(user);
         user.setId(IdGeneratorUtil.generate(User.class));
         users.add(user);
 
