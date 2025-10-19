@@ -1,5 +1,6 @@
 package com.example.java_lecture_3.util;
 
+import com.example.java_lecture_3.model.Event;
 import com.example.java_lecture_3.model.User;
 
 import java.util.ArrayList;
@@ -20,5 +21,9 @@ public class TestDataUtil {
         users.add(new User(9L, "Дмитрий", 26, "dmitry@mail.com"));
         users.add(new User(10L, "Светлана", 33, "svetlana@mail.com"));
         return users;
+    }
+    public  static List<Event> createTestEvents() {
+        List<Event> events = new ArrayList<>();
+        return events;
     }
 }

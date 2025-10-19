@@ -2,13 +2,12 @@ package com.example.java_lecture_3.controller;
 
 import com.example.java_lecture_3.model.User;
 import com.example.java_lecture_3.util.TestDataUtil;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@RestController("/users")
+@RestController
+@RequestMapping("/users")
 public class UserController {
     private final List<User> users = TestDataUtil.createTestUsers();
     @GetMapping
@@ -27,5 +26,37 @@ public class UserController {
         return users.stream()
                 .filter(user -> user.getAge() >= minAge && user.getAge()<=maxAge)
                 .toList();
+    }
+    @PostMapping
+    public User createUser(@Validated @RequestBody User newUser) {
+        generateId();
+        users.add(newUser);
+        return newUser;
+    }
+    private long generateId() {
+        return users.stream()
+                .mapToLong(User::getId)
+                .max()
+                .orElse(0L)
+                + 1;
+    }
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable Long id,@RequestBody User userUpdate){
+        User updateUser = getUserById(id);
+        if (updateUser != null) {
+            updateUser.setName(userUpdate.getName());
+            updateUser.setAge(userUpdate.getAge());
+            updateUser.setEmail(userUpdate.getEmail());
+        }
+        return updateUser;
+    }
+    @DeleteMapping("/{id}")
+    public boolean deleteUser(@PathVariable Long id){
+        if (getUserById(id) == null) {
+            throw new IllegalArgumentException("User with id " + id + " not found");
+        }else{
+            users.removeIf(user -> user.getId().equals(id));
+            return true;
+        }
     }
 }
