@@ -1,7 +1,11 @@
 package com.example.java_lecture_3.model;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 
 // Класс User с использованием Lombok
 @Data // автоматически создает геттеры, сеттеры, equals, hashCode, toString
@@ -10,7 +14,11 @@ import lombok.NoArgsConstructor;
 public class User {
 
     private Long id;
+    @NotBlank(message = "Name is mandatory")
     private String name;
+    @Min(value = 0, message = "Age cannot be negative")
     private Integer age;
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
     private String email;
 }
