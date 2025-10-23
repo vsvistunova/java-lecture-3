@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor // создает пустой конструктор
 @AllArgsConstructor // создает конструктор со всеми полями
 public class User {
-
   private Long id;
   private String name;
   private Integer age;

@@ -2,22 +2,13 @@ package com.university.java_lecture_3.controller;
 
 import com.university.java_lecture_3.model.User;
 import com.university.java_lecture_3.util.TestDataUtil;
+import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
   private final List<User> users = TestDataUtil.createTestUsers();
 
   @GetMapping
@@ -45,6 +36,8 @@ public class UserController {
     }
     return result;
   }
+
+  ""
 
   @PostMapping
   public User createUser(@RequestBody User newUser) {
