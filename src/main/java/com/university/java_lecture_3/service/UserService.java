@@ -2,80 +2,56 @@ package com.university.java_lecture_3.service;
 
 import com.university.java_lecture_3.exception.UserValidationException;
 import com.university.java_lecture_3.model.User;
-import com.university.java_lecture_3.util.IdGeneratorUtil;
+import com.university.java_lecture_3.repository.UserRepository;
 import com.university.java_lecture_3.validation.Validator;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    private final List<User> users;
+    private final UserRepository userRepository;
     private final Validator<User, UserValidationException> validator;
 
-    @Autowired
-    public UserService(Validator<User, UserValidationException> validator) {
-        this.users = new ArrayList<>();
-        this.validator = validator;
+    @PostConstruct
+    public void init() {
         createTestUsers();
     }
 
-    public Optional<User> findById(Long id) {
-        for (User user : users) {
-            if (user.getId().equals(id)) {
-                return Optional.of(user);
-            }
+    public User findById(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new UserValidationException("User with id " + id + " not found");
         }
 
-        return Optional.empty();
+        return optionalUser.get();
     }
 
     public List<User> findAllByAge(int minAge, int maxAge) {
-        List<User> result = new ArrayList<>();
-
-        for (User user : users) {
-            if (user.getAge() >= minAge && user.getAge() <= maxAge) {
-                result.add(user);
-            }
-        }
-
-        return result;
+        return userRepository.findAllByAge(minAge, maxAge);
     }
 
     public List<User> findAll() {
-        return users;
+        return userRepository.findAll();
     }
 
     public User save(User user) {
         validator.validate(user);
-        user.setId(IdGeneratorUtil.generate(User.class));
-        users.add(user);
-
-        return user;
+        return userRepository.save(user);
     }
 
     public User update(Long id, User user) {
-        User updatedUser = findById(id).orElseThrow(
-                () -> new RuntimeException("User with id " + id + " not found")
-        );
-        updatedUser.setName(user.getName());
-        updatedUser.setAge(user.getAge());
-        updatedUser.setEmail(user.getEmail());
-
-        return updatedUser;
+        validator.validate(user);
+        return userRepository.update(id, user);
     }
 
     public boolean delete(Long id) {
-        if (findById(id).isPresent()) {
-            users.remove(findById(id).get());
-            return true;
-        }
-
-        return false;
+        return userRepository.delete(id);
     }
 
     private void createTestUsers() {

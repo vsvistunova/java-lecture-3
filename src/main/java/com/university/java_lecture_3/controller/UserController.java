@@ -2,22 +2,17 @@ package com.university.java_lecture_3.controller;
 
 import com.university.java_lecture_3.model.User;
 import com.university.java_lecture_3.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -26,8 +21,7 @@ public class UserController {
 
     @GetMapping("/{userIdToFind}")
     public User getUserById(@PathVariable Long userIdToFind) {
-        Optional<User> optionalUser = userService.findById(userIdToFind);
-        return optionalUser.orElse(null);
+        return userService.findById(userIdToFind);
     }
 
     @GetMapping("/filtered")

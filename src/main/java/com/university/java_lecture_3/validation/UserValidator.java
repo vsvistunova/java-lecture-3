@@ -15,6 +15,25 @@ public class UserValidator implements Validator<User, UserValidationException> {
 
     @Override
     public void validate(User user) throws UserValidationException {
+        checkNullParams(user);
+
+        if (user.getAge() < MIN_AGE || user.getAge() > MAX_AGE) {
+            throw new UserValidationException("User's age must be between %d and %d".formatted(MIN_AGE, MAX_AGE));
+        }
+
+        int nameLength = user.getName().length();
+        if (nameLength < NAME_MIN_LENGTH || nameLength > NAME_MAX_LENGTH) {
+            throw new UserValidationException(
+                    "User's name must be between %d and %d".formatted(NAME_MIN_LENGTH, NAME_MAX_LENGTH)
+            );
+        }
+
+        if (!user.getEmail().matches(EMAIL_REGEX)) {
+            throw new UserValidationException("User's email address is invalid");
+        }
+    }
+
+    private static void checkNullParams(User user) {
         if (user == null) {
             throw new UserValidationException("User is null");
         }
@@ -26,16 +45,6 @@ public class UserValidator implements Validator<User, UserValidationException> {
         }
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             throw new UserValidationException("User's email is empty");
-        }
-
-        if (user.getAge() < MIN_AGE || user.getAge() > MAX_AGE) {
-            throw new UserValidationException("User's age must be between 0 and 100");
-        }
-        if (user.getName().length() < NAME_MIN_LENGTH || user.getName().length() > NAME_MAX_LENGTH) {
-            throw new UserValidationException("User's name must be between 3 and 64");
-        }
-        if (!user.getEmail().matches(EMAIL_REGEX)) {
-            throw new UserValidationException("User's email address is invalid");
         }
     }
 

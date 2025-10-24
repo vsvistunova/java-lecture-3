@@ -17,12 +17,9 @@ public class IdGeneratorUtil {
     }
 
     public static long generate(Class<?> clazz) {
-        if (ENTITY_ID_COUNTER.containsKey(clazz)) {
-            return ENTITY_ID_COUNTER.get(clazz).incrementAndGet();
-        } else {
-            ENTITY_ID_COUNTER.put(clazz, new AtomicLong(INITIAL_ID));
-            return ENTITY_ID_COUNTER.get(clazz).get();
-        }
+        AtomicLong counter = ENTITY_ID_COUNTER.computeIfAbsent(clazz,
+                k -> new AtomicLong(INITIAL_ID));
+        return counter.getAndIncrement();
     }
 
 }
