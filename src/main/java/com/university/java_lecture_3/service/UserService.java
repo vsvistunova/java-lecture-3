@@ -1,12 +1,11 @@
-package com.example.java_lecture_3.service;
+package com.university.java_lecture_3.service;
 
-import com.example.java_lecture_3.model.User;
-import com.example.java_lecture_3.util.TestDataUtil;
+import com.university.java_lecture_3.model.User;
+import com.university.java_lecture_3.util.TestDataUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -14,19 +13,23 @@ public class UserService {
     public List<User> getAllUsers() {
         return users;
     }
-    public User getUserById(@PathVariable Long id) {
+
+    public Optional<User> findUserById(Long id) {
         return users.stream()
                 .filter(user -> user.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
-    public List<User> getUsersByAge(@RequestParam Integer minAge, @RequestParam Integer maxAge){
+    public User getUserById(Long id) {
+        return findUserById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User with id " + id + " not found"));
+    }
+    public List<User> getUsersByAge(Integer minAge, Integer maxAge){
         return users.stream()
                 .filter(user -> user.getAge() >= minAge && user.getAge()<=maxAge)
                 .toList();
     }
-    public User createUser(@Validated @RequestBody User newUser) {
-        generateId();
+    public User createUser(User newUser) {
+        newUser.setId(generateId());
         users.add(newUser);
         return newUser;
     }
@@ -37,21 +40,18 @@ public class UserService {
                 .orElse(0L)
                 + 1;
     }
-    public User updateUser(@PathVariable Long id,@RequestBody User userUpdate){
+    public User updateUser(Long id, User userUpdate){
         User updateUser = getUserById(id);
-        if (updateUser != null) {
             updateUser.setName(userUpdate.getName());
             updateUser.setAge(userUpdate.getAge());
             updateUser.setEmail(userUpdate.getEmail());
-        }
-        return updateUser;
+            return updateUser;
     }
-    public boolean deleteUser(@PathVariable Long id){
-        if (getUserById(id) == null) {
+    public boolean deleteUser(Long id){
+        Optional<User> userOpt = findUserById(id);
+        if (userOpt.isEmpty()) {
             throw new IllegalArgumentException("User with id " + id + " not found");
-        }else{
-            users.removeIf(user -> user.getId().equals(id));
-            return true;
         }
+        return users.remove(userOpt.get());
     }
 }

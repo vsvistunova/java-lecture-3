@@ -10,11 +10,11 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar" />
         </processorPath>
-        <module name="java-lecture-3" />
+        <module name="java-lecture-3 (1) (com.university)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="java-lecture-3 (1) (com.university)" target="21" />
+      <module name="java-lecture-3" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
