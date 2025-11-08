@@ -44,18 +44,28 @@ public class EventService {
         return findEventById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Event with id " + id + " not found"));
     }
-    public Event updateEvent(Long id, Event eventUpdate){
+    public Event updateEvent(Long id, Event eventUpdate) {
         Event updateEvent = getEventById(id);
-        if (updateEvent != null) {
-            updateEvent.setName(eventUpdate.getName());
-            updateEvent.setDescription(eventUpdate.getDescription());
-            updateEvent.setDateTime(eventUpdate.getDateTime());
-            updateEvent.setLocation(eventUpdate.getLocation());
-            updateEvent.setCapacity(eventUpdate.getCapacity());
-            return updateEvent;
-        }else{
-            throw new IllegalArgumentException("Event with id " + id + " not found");
+
+        Integer newCapacity = eventUpdate.getCapacity();
+
+        if (newCapacity != null && newCapacity < updateEvent.getAttendees().size()) {
+            throw new IllegalArgumentException(
+                    "Capacity cannot be set to " + newCapacity +
+                            " as there are already " + updateEvent.getAttendees().size() +
+                            " participants registered for the event."
+            );
         }
+        updateEvent.setName(eventUpdate.getName());
+        updateEvent.setDescription(eventUpdate.getDescription());
+        updateEvent.setDateTime(eventUpdate.getDateTime());
+        updateEvent.setLocation(eventUpdate.getLocation());
+
+        if (newCapacity != null) {
+            updateEvent.setCapacity(newCapacity);
+        }
+
+        return updateEvent;
     }
 
     public boolean deleteEvent( Long id){

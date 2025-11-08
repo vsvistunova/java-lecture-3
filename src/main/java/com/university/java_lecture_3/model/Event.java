@@ -1,4 +1,5 @@
 package com.university.java_lecture_3.model;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ public class Event {
 
     @NotBlank(message = "Location is mandatory")
     private String location;
-
+    @Min(value = 0, message = "Capacity must be non-negative")
     private Integer capacity;
 
     private List<User> attendees;

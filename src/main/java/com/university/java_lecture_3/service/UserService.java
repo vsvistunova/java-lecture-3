@@ -23,9 +23,16 @@ public class UserService {
         return findUserById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User with id " + id + " not found"));
     }
-    public List<User> getUsersByAge(Integer minAge, Integer maxAge){
+    public List<User> getUsersByAge(Integer minAge, Integer maxAge) {
+        if (minAge == null || maxAge == null) {
+            throw new IllegalArgumentException("Age values cannot be null");
+        }
+        if (minAge > maxAge) {
+            throw new IllegalArgumentException("minAge must be less than or equal to maxAge");
+        }
+
         return users.stream()
-                .filter(user -> user.getAge() >= minAge && user.getAge()<=maxAge)
+                .filter(user -> user.getAge() >= minAge && user.getAge() <= maxAge)
                 .toList();
     }
     public User createUser(User newUser) {

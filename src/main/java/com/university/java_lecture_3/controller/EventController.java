@@ -2,6 +2,7 @@ package com.university.java_lecture_3.controller;
 
 import com.university.java_lecture_3.model.Event;
 import com.university.java_lecture_3.service.EventService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public Event updateEvent(@PathVariable Long id, @RequestBody Event eventUpdate){
+    public Event updateEvent(@PathVariable Long id,@Valid @RequestBody Event eventUpdate){
         return eventService.updateEvent(id, eventUpdate);
     }
 
