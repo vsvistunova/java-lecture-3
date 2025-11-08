@@ -1,5 +1,8 @@
 package com.university.java_lecture_3.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor // создает конструктор со всеми полями
 public class User {
 
-  private Long id;
-  private String name;
-  private Integer age;
-  private String email;
+    private Long id;
+    @NotBlank(message = "Name is mandatory")
+    private String name;
+    @Min(value = 0, message = "Age cannot be negative")
+    private Integer age;
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
+    private String email;
 }

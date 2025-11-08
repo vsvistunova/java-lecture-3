@@ -1,83 +1,40 @@
 package com.university.java_lecture_3.controller;
 
 import com.university.java_lecture_3.model.User;
-import com.university.java_lecture_3.util.TestDataUtil;
-import java.util.ArrayList;
+import com.university.java_lecture_3.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
-
-  private final List<User> users = TestDataUtil.createTestUsers();
-
-  @GetMapping
-  public List<User> getAllUsers() {
-    return users;
-  }
-
-  @GetMapping("/{userIdToFind}")
-  public User getUserById(@PathVariable Long userIdToFind) {
-    for (User user : users) {
-      if (user.getId().equals(userIdToFind)) {
-        return user;
-      }
+    private  final UserService userService;
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
     }
-    return null; // не нашли пользователя с таким id
-  }
-
-  @GetMapping("/filtered")
-  public List<User> getUsersByAge(@RequestParam Integer minAge, @RequestParam Integer maxAge) {
-    List<User> result = new ArrayList<>();
-    for (User user : users) {
-      if (user.getAge() >= minAge && user.getAge() <= maxAge) {
-        result.add(user);
-      }
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
-    return result;
-  }
-
-  @PostMapping
-  public User createUser(@RequestBody User newUser) {
-    users.add(newUser);
-    return newUser;
-  }
-
-  @PutMapping("/{userId}")
-  public User updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
-    // находим пользователя по id
-    for (User currentUser : users) {
-      if (currentUser.getId().equals(userId)) {
-        // нашли - обновляем
-        currentUser.setAge(updatedUser.getAge());
-        currentUser.setName(updatedUser.getName());
-        currentUser.setEmail(updatedUser.getEmail());
-        return currentUser;
-      }
+    @GetMapping("/filtered")
+    public List<User> getUsersByAge(@RequestParam Integer minAge, @RequestParam Integer maxAge){
+        return userService.getUsersByAge(minAge, maxAge);
     }
-
-    return null; // не нашли пользователя
-  }
-
-  @DeleteMapping("/{userId}")
-  public boolean deleteUser(@PathVariable Long userId) {
-    // используем метод, который написали ранее, чтобы найти пользователя
-    User userToDelete = getUserById(userId);
-    if (userToDelete == null) {
-      // пользователь не найден - удалить не можем, вернем false
-      return false;
-    } else {
-      users.remove(userToDelete);
-      return true;
+    @PostMapping
+    public User createUser(@Validated @RequestBody User newUser) {
+        return userService.createUser(newUser);
     }
-  }
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable Long id,@RequestBody User userUpdate){
+        return userService.updateUser(id, userUpdate);
+    }
+    @DeleteMapping("/{id}")
+    public boolean deleteUser(@PathVariable Long id){
+        return userService.deleteUser(id);
+    }
 }
