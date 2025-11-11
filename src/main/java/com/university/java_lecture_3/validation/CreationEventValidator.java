@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class CreationEventValidator implements Validator<Event, EventValidationException> {
 
     private static final int NAME_MIN_LENGTH = 3;
-    private static final int NAME_MAX_LENGTH = 32;
+    private static final int NAME_MAX_LENGTH = 64;
     private static final int DESCRIPTION_MAX_LENGTH = 1024;
     private static final int LOCATION_MIN_LENGTH = 3;
     private static final int LOCATION_MAX_LENGTH = 128;

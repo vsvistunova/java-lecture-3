@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-events-table
+      author: vladimir_r
+      comment: Создание таблицы событий
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/001-create-events-table/create-events-table.sql

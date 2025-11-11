@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-event-registrations-table
+      author: vladimir_r
+      comment: Создание таблицы регистраций на мероприятия
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/004-create-event-registrations-table/create-event-registrations-table.sql
