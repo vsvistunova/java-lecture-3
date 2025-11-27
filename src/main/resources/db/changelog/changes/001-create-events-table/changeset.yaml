@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-events-table
+      author: victor_h
+      comment: Создание таблицы мероприятий университета
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/001-create-events-table/create-events-table.sql

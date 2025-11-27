@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class EventsService {
+public class  EventsService {
     private final List<Event> events = TestDataUtil.createTestEvents();
     private final UserService userService;
 
