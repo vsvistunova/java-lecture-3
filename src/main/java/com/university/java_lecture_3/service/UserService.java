@@ -1,11 +1,16 @@
 package com.university.java_lecture_3.service;
 
+import com.university.java_lecture_3.dto.request.UserRequest;
+import com.university.java_lecture_3.dto.response.UserDetailedResponse;
+import com.university.java_lecture_3.dto.response.UserSummaryResponse;
 import com.university.java_lecture_3.exception.UserValidationException;
+import com.university.java_lecture_3.mapper.UserMapper;
+import com.university.java_lecture_3.model.Group;
 import com.university.java_lecture_3.model.User;
+import com.university.java_lecture_3.projection.UserSummaryProjection;
 import com.university.java_lecture_3.repository.UserRepository;
-import com.university.java_lecture_3.validation.Validator;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,55 +21,65 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final Validator<User, UserValidationException> validator;
+    private final UserMapper userMapper;
+    private final GroupService groupService;
 
-    @PostConstruct
-    public void init() {
-        createTestUsers();
+    public List<UserSummaryResponse> getAllByAgeBetween(int minAge, int maxAge, Pageable pageable) {
+        List<UserSummaryProjection> users = userRepository.findAllByAgeBetween(minAge, maxAge, pageable);
+
+        return userMapper.toSummaryResponseListFromProjection(users);
     }
 
-    public User findById(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()) {
-            throw new UserValidationException("User with id " + id + " not found");
-        }
-
-        return optionalUser.get();
+    public User getById(Long id) {
+        return userRepository.findWithDetailsById(id)
+                .orElseThrow(() -> new UserValidationException("User with id " + id + " not found"));
     }
 
-    public List<User> findAllByAge(int minAge, int maxAge) {
-        return userRepository.findAllByAge(minAge, maxAge);
+    public UserDetailedResponse getDetailedById(Long id) {
+        return userMapper.toDetailedResponse(getById(id));
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserSummaryResponse> getAll(Pageable pageable) {
+        List<UserSummaryProjection> users = userRepository.findAllUserSummaries(pageable);
+
+        return userMapper.toSummaryResponseListFromProjection(users);
     }
 
-    public User save(User user) {
-        validator.validate(user);
-        return userRepository.save(user);
+    public UserDetailedResponse save(UserRequest userRequest) {
+        Group group = groupService.getById(userRequest.groupId());
+
+        User user = userMapper.toEntity(userRequest);
+        user.setGroup(group);
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toDetailedResponse(savedUser);
     }
 
-    public User update(Long id, User user) {
-        validator.validate(user);
-        return userRepository.update(id, user);
+    public UserDetailedResponse update(Long id, UserRequest userDetails) {
+        User user = getById(id);
+        Group group = groupService.getById(userDetails.groupId());
+
+        user.setName(userDetails.name());
+        user.setAge(userDetails.age());
+        user.setEmail(userDetails.email());
+        user.setRole(userDetails.role());
+        user.setGroup(group);
+
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toDetailedResponse(updatedUser);
     }
 
     public boolean delete(Long id) {
-        return userRepository.delete(id);
-    }
+        Optional<User> optionalEvent = userRepository.findById(id);
 
-    private void createTestUsers() {
-        save(new User("Анна", 25, "anna@mail.com"));
-        save(new User("Иван", 30, "ivan@mail.com"));
-        save(new User("Мария", 22, "maria@mail.com"));
-        save(new User("Петр", 35, "petr@mail.com"));
-        save(new User("Ольга", 28, "olga@mail.com"));
-        save(new User("Сергей", 27, "sergey@mail.com"));
-        save(new User("Елена", 29, "elena@mail.com"));
-        save(new User("Алексей", 31, "alex@mail.com"));
-        save(new User("Дмитрий", 26, "dmitry@mail.com"));
-        save(new User("Светлана", 33, "svetlana@mail.com"));
+        if (optionalEvent.isPresent()) {
+            userRepository.delete(optionalEvent.get());
+            return true;
+        }
+
+        return false;
     }
 
 }

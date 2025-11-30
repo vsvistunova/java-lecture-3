@@ -1,24 +1,40 @@
 package com.university.java_lecture_3.model;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// Класс User с использованием Lombok
-@Data // автоматически создает геттеры, сеттеры, equals, hashCode, toString
-@NoArgsConstructor // создает пустой конструктор
-@AllArgsConstructor // создает конструктор со всеми полями
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "users")
 public class User {
 
-  private Long id;
-  private String name;
-  private Integer age;
-  private String email;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  public User(String name, Integer age, String email) {
-    this.name = name;
-    this.age = age;
-    this.email = email;
-  }
+    @Column(name = "name", nullable = false, length = 64)
+    private String name;
+
+    @Column(name = "age")
+    private Integer age;
+
+    @Column(name = "email", unique = true, nullable = false, length = 128)
+    private String email;
+
+    @Column(name = "role", nullable = false, length = 32)
+    private String role;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<EventRegistration> eventRegistrations;
 
 }
