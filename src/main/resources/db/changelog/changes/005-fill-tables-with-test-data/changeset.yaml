@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-fill-tables-with-test-data
+      author: vladimir_r
+      comment: Заполнение таблиц тестовыми данными
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/005-fill-tables-with-test-data/fill-tables-with-test-data.sql

@@ -1,83 +1,77 @@
 package com.university.java_lecture_3.controller;
 
-import com.university.java_lecture_3.model.User;
-import com.university.java_lecture_3.util.TestDataUtil;
-import java.util.ArrayList;
+import com.university.java_lecture_3.dto.request.UserRequest;
+import com.university.java_lecture_3.dto.response.EventRegistrationResponse;
+import com.university.java_lecture_3.dto.response.UserDetailedResponse;
+import com.university.java_lecture_3.dto.response.UserSummaryResponse;
+import com.university.java_lecture_3.service.EventRegistrationService;
+import com.university.java_lecture_3.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
+@Tag(
+        name = "Пользователи (Users)",
+        description = "API для управления пользователями, включая их регистрации на мероприятия."
+)
 public class UserController {
 
-  private final List<User> users = TestDataUtil.createTestUsers();
+    private final UserService userService;
+    private final EventRegistrationService eventRegistrationService;
 
-  @GetMapping
-  public List<User> getAllUsers() {
-    return users;
-  }
-
-  @GetMapping("/{userIdToFind}")
-  public User getUserById(@PathVariable Long userIdToFind) {
-    for (User user : users) {
-      if (user.getId().equals(userIdToFind)) {
-        return user;
-      }
-    }
-    return null; // не нашли пользователя с таким id
-  }
-
-  @GetMapping("/filtered")
-  public List<User> getUsersByAge(@RequestParam Integer minAge, @RequestParam Integer maxAge) {
-    List<User> result = new ArrayList<>();
-    for (User user : users) {
-      if (user.getAge() >= minAge && user.getAge() <= maxAge) {
-        result.add(user);
-      }
-    }
-    return result;
-  }
-
-  @PostMapping
-  public User createUser(@RequestBody User newUser) {
-    users.add(newUser);
-    return newUser;
-  }
-
-  @PutMapping("/{userId}")
-  public User updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
-    // находим пользователя по id
-    for (User currentUser : users) {
-      if (currentUser.getId().equals(userId)) {
-        // нашли - обновляем
-        currentUser.setAge(updatedUser.getAge());
-        currentUser.setName(updatedUser.getName());
-        currentUser.setEmail(updatedUser.getEmail());
-        return currentUser;
-      }
+    @GetMapping
+    public ResponseEntity<List<UserSummaryResponse>> getAll(@PageableDefault(size = 5) Pageable pageable) {
+        return ResponseEntity.ok(userService.getAll(pageable));
     }
 
-    return null; // не нашли пользователя
-  }
-
-  @DeleteMapping("/{userId}")
-  public boolean deleteUser(@PathVariable Long userId) {
-    // используем метод, который написали ранее, чтобы найти пользователя
-    User userToDelete = getUserById(userId);
-    if (userToDelete == null) {
-      // пользователь не найден - удалить не можем, вернем false
-      return false;
-    } else {
-      users.remove(userToDelete);
-      return true;
+    @GetMapping("/{userIdToFind}")
+    public ResponseEntity<UserDetailedResponse> getById(@PathVariable Long userIdToFind) {
+        return ResponseEntity.ok(userService.getDetailedById(userIdToFind));
     }
-  }
+
+    @GetMapping("/filtered")
+    public ResponseEntity<List<UserSummaryResponse>> getByAgeBetween(
+            @RequestParam Integer minAge, @RequestParam Integer maxAge,
+            @PageableDefault(size = 5) Pageable pageable
+    ) {
+        return ResponseEntity.ok(userService.getAllByAgeBetween(minAge, maxAge, pageable));
+    }
+
+    @GetMapping("/{userId}/events")
+    public ResponseEntity<List<EventRegistrationResponse>> getRegistrationsByUserId(
+            @PathVariable Long userId,
+            @PageableDefault(size = 5) Pageable pageable
+    ) {
+        return ResponseEntity.ok(eventRegistrationService.getAllByUserId(userId, pageable));
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDetailedResponse> create(@Valid @RequestBody UserRequest user) {
+        return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserDetailedResponse> update(
+            @PathVariable Long userId,
+            @Valid @RequestBody UserRequest updatedUser
+    ) {
+        return ResponseEntity.ok(userService.update(userId, updatedUser));
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> delete(@PathVariable Long userId) {
+        userService.delete(userId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
