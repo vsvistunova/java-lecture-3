@@ -3,7 +3,7 @@ package com.university.java_lecture_3.service;
 import com.university.java_lecture_3.dto.request.UserRequest;
 import com.university.java_lecture_3.dto.response.UserDetailedResponse;
 import com.university.java_lecture_3.dto.response.UserSummaryResponse;
-import com.university.java_lecture_3.exception.UserValidationException;
+import com.university.java_lecture_3.exception.NotFoundException;
 import com.university.java_lecture_3.mapper.UserMapper;
 import com.university.java_lecture_3.model.Group;
 import com.university.java_lecture_3.model.User;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class UserService {
 
     public User getById(Long id) {
         return userRepository.findWithDetailsById(id)
-                .orElseThrow(() -> new UserValidationException("User with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
     }
 
     public UserDetailedResponse getDetailedById(Long id) {
@@ -71,15 +70,11 @@ public class UserService {
         return userMapper.toDetailedResponse(updatedUser);
     }
 
-    public boolean delete(Long id) {
-        Optional<User> optionalEvent = userRepository.findById(id);
+    public void delete(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
 
-        if (optionalEvent.isPresent()) {
-            userRepository.delete(optionalEvent.get());
-            return true;
-        }
-
-        return false;
+        userRepository.delete(user);
     }
 
 }

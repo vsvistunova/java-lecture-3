@@ -3,10 +3,13 @@ package com.university.java_lecture_3.controller;
 import com.university.java_lecture_3.dto.request.EventRequest;
 import com.university.java_lecture_3.dto.response.EventResponse;
 import com.university.java_lecture_3.service.EventService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +17,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
+@Tag(
+        name = "Мероприятия (Events)",
+        description = "API для управления событиями: создание, просмотр, обновление и удаление."
+)
 public class EventController {
 
     private final EventService eventService;
@@ -31,28 +38,31 @@ public class EventController {
 //    }
 
     @GetMapping("/{id}/relevance")
-    public boolean isRelevant(@PathVariable Long id) {
-        return eventService.isRelevant(id);
+    public ResponseEntity<Boolean> isRelevant(@PathVariable Long id) {
+        return ResponseEntity.ok(eventService.isRelevant(id));
     }
 
     @GetMapping
-    public List<EventResponse> getAll(@PageableDefault(size = 5) Pageable pageable) {
-        return eventService.getAll(pageable);
+    public ResponseEntity<List<EventResponse>> getAll(@PageableDefault(size = 5) Pageable pageable) {
+        return ResponseEntity.ok(eventService.getAll(pageable));
     }
 
     @PostMapping
-    public EventResponse create(@Valid @RequestBody EventRequest event) {
-        return eventService.save(event);
+    public ResponseEntity<EventResponse> create(@Valid @RequestBody EventRequest event) {
+        EventResponse saved = eventService.save(event);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public EventResponse update(@PathVariable Long id, @Valid @RequestBody EventRequest event) {
-        return eventService.update(id, event);
+    public ResponseEntity<EventResponse> update(@PathVariable Long id, @Valid @RequestBody EventRequest event) {
+        eventService.update(id, event);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public boolean delete(@PathVariable Long id) {
-        return eventService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        eventService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

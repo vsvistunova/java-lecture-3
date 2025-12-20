@@ -2,7 +2,7 @@ package com.university.java_lecture_3.service;
 
 import com.university.java_lecture_3.dto.request.EventRequest;
 import com.university.java_lecture_3.dto.response.EventResponse;
-import com.university.java_lecture_3.exception.EventValidationException;
+import com.university.java_lecture_3.exception.NotFoundException;
 import com.university.java_lecture_3.mapper.EventMapper;
 import com.university.java_lecture_3.model.Event;
 import com.university.java_lecture_3.repository.EventRepository;
@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +36,7 @@ public class EventService {
 
     public Event getById(Long id) {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new EventValidationException("Event with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Event with id " + id + " not found"));
     }
 
     public List<EventResponse> getAll(Pageable pageable) {
@@ -53,7 +52,7 @@ public class EventService {
         return eventMapper.toResponse(savedEvent);
     }
 
-    public EventResponse update(Long id, EventRequest eventDetails) {
+    public void update(Long id, EventRequest eventDetails) {
         Event event = getById(id);
 
         event.setTitle(eventDetails.title());
@@ -62,20 +61,14 @@ public class EventService {
         event.setLocation(eventDetails.location());
         event.setMaxParticipants(eventDetails.maxParticipants());
 
-        Event updatedEvent = eventRepository.save(event);
-
-        return eventMapper.toResponse(updatedEvent);
+        eventRepository.save(event);
     }
 
-    public boolean delete(Long id) {
-        Optional<Event> optionalEvent = eventRepository.findById(id);
+    public void delete(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Event with id " + id + " not found"));
 
-        if (optionalEvent.isPresent()) {
-            eventRepository.delete(optionalEvent.get());
-            return true;
-        }
-
-        return false;
+        eventRepository.delete(event);
     }
 
 }

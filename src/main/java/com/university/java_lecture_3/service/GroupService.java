@@ -2,7 +2,7 @@ package com.university.java_lecture_3.service;
 
 import com.university.java_lecture_3.dto.request.GroupRequest;
 import com.university.java_lecture_3.dto.response.GroupResponse;
-import com.university.java_lecture_3.exception.GroupValidationException;
+import com.university.java_lecture_3.exception.NotFoundException;
 import com.university.java_lecture_3.mapper.GroupMapper;
 import com.university.java_lecture_3.model.Group;
 import com.university.java_lecture_3.projection.GroupProjection;
@@ -22,7 +22,7 @@ public class GroupService {
 
     public Group getById(Long id) {
         return groupRepository.findById(id)
-                .orElseThrow(() -> new GroupValidationException("Group with id " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Group with id " + id + " not found"));
     }
 
     public List<GroupResponse> getAll(Pageable pageable) {

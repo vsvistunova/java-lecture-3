@@ -16,7 +16,6 @@ import java.util.List;
 )
 public interface UserMapper {
 
-    @Mapping(target = "group", source = "group")
     @Mapping(target = "events", source = "eventRegistrations")
     UserDetailedResponse toDetailedResponse(User user);
 

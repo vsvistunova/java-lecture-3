@@ -12,7 +12,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface EventMapper {
 
-    @Mapping(target = "maxParticipants", source = "maxParticipants")
     EventResponse toResponse(Event event);
 
     Event toEntity(EventRequest eventRequest);
