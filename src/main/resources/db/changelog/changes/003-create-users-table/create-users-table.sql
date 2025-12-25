@@ -8,5 +8,5 @@ CREATE TABLE users
     group_id int4                                             NULL,
     CONSTRAINT users_email_key UNIQUE (email),
     CONSTRAINT users_pkey PRIMARY KEY (id),
-    CONSTRAINT users_group_id_fkey FOREIGN KEY (group_id) REFERENCES "groups" (id)
+    CONSTRAINT users_group_id_pkey FOREIGN KEY (group_id) REFERENCES "groups" (id)
 );

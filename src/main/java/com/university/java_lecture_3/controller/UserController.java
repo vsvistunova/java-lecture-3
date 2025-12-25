@@ -1,6 +1,9 @@
 package com.university.java_lecture_3.controller;
 
-import com.university.java_lecture_3.model.User;
+import com.university.java_lecture_3.model.dto.request.CreateUserRequest;
+import com.university.java_lecture_3.model.dto.request.UpdateUserRequest;
+import com.university.java_lecture_3.model.dto.response.UserDetailedResponse;
+import com.university.java_lecture_3.model.dto.response.UserSummaryResponse;
 import com.university.java_lecture_3.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,32 +17,50 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserSummaryResponse> getAllUsers(
+            @RequestParam int pageSize,
+            @RequestParam int pageNumber) {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable Long userId) {
+    public UserDetailedResponse getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId);
     }
 
-    @GetMapping("/filtered")
-    public List<User> getUsersByAge(@RequestParam Integer minAge, @RequestParam Integer maxAge) {
-        return userService.getUsersByAge(minAge, maxAge);
-    }
+//    @GetMapping("/filtered")
+//    public List<User> getUsersByAge(@RequestParam Integer minAge, @RequestParam Integer maxAge) {
+//        return userService.getUsersByAge(minAge, maxAge);
+//    }
 
     @PostMapping
-    public User createUser(@RequestBody User newUser) {
-        return userService.createUser(newUser);
+    public UserDetailedResponse createUser(@RequestBody CreateUserRequest request) {
+        return userService.createUser(request);
     }
 
     @PutMapping("/{userId}")
-    public User updateUser(@PathVariable Long userId, @RequestBody User updatedUser) {
-        return userService.updateUser(userId, updatedUser);
+    public UserDetailedResponse updateUser(@PathVariable Long userId, @RequestBody UpdateUserRequest request) {
+        return userService.updateUser(userId, request);
     }
 
-    @DeleteMapping("/{userId}")
-    public boolean deleteUser(@PathVariable Long userId) {
-        return userService.deleteUser(userId);
+    @GetMapping("/filtered")
+    public List<UserSummaryResponse> getUsersByAge(@RequestParam Integer minAge, @RequestParam Integer maxAge) {
+        return userService.getUsersByAge(minAge, maxAge);
     }
+
+    @GetMapping("/filtered")
+    public List<UserSummaryResponse> getUsersByEmail(@RequestParam String email) {
+        return userService.getUsersByEmail(email);
+    }
+
+    @GetMapping("/filtered")
+    public List<UserSummaryResponse> getUsersByGroupName(@RequestParam String groupName) {
+        return userService.getUsersByGroupName(groupName);
+
+
+    }
+//    @DeleteMapping("/{userId}")
+//    public boolean deleteUser(@PathVariable Long userId) {
+//        return userService.deleteUser(userId);
+//    }
 }

@@ -5,10 +5,10 @@
 -- DROP TABLE public.event_registrations;
 
 CREATE TABLE public.event_registrations (
-                                            id serial4 NOT NULL,
-                                            user_id int4 NOT NULL,
-                                            event_id int4 NOT NULL,
-                                            CONSTRAINT event_registrations_pkey PRIMARY KEY (id)
+    id serial4 NOT NULL,
+    user_id int4 NOT NULL,
+    event_id int4 NOT NULL,
+    CONSTRAINT event_registrations_pkey PRIMARY KEY (id)
 );
 
 
