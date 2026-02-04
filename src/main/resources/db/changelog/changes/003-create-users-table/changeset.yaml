@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-users-table
+      author: victor_h
+      comment: Создание таблицы пользователей университета
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/003-create-users-table/create-users-table.sql

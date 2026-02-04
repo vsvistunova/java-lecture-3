@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: java-lecture-3
+
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${USERNAME_URL}
+    password: ${PASSWORD_URL}

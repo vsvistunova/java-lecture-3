@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-groups-table
+      author: victor_h
+      comment: Создание таблицы групп университета
+      changes:
+        - sqlFile:
+            path: db/changelog/changes/002-create-groups-table/create-groups-table.sql
